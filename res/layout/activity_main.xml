@@ -17,6 +17,9 @@
         <!-- 唱片 -->
         <include layout="@layout/pan_layout" />
         
+        <!-- 文字框 -->
+        <include layout="@layout/name_select" />
+        
     </LinearLayout>
     
 </FrameLayout>
