@@ -14,14 +14,16 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
 import com.example.guessmusic.R;
+import com.example.guessmusic.model.IWordButtonClickListener;
 import com.example.guessmusic.model.WordButton;
 import com.example.guessmusic.myui.MyGridView;
 import com.example.guessmusic.util.Util;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements IWordButtonClickListener {
 	
 	//唱片相关动画
 	private Animation mPanAnim;
@@ -65,6 +67,9 @@ public class MainActivity extends Activity {
 		mViewPanBar = (ImageView) findViewById(R.id.imageView2);
 		
 		mMyGridView = (MyGridView) findViewById(R.id.gridView);
+		
+		//注册监听
+		mMyGridView.registOnWordButtonClick(this);
 		
 		mViewWordsContainer = (LinearLayout) findViewById(R.id.word_select_container);
 		
@@ -153,6 +158,11 @@ public class MainActivity extends Activity {
 		//初始化游戏数据
 		initCurrentStageData();
 		
+	}
+	
+	@Override
+	public void onWordButtonClick(WordButton wordButton) {
+		Toast.makeText(this, wordButton.mIndex + "", Toast.LENGTH_SHORT).show();
 	}
 	
 	/**
