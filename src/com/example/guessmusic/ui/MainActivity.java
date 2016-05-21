@@ -62,6 +62,14 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 	//拨杆控件
 	private ImageView mViewPanBar;
 	
+	//当前关索引
+	private TextView mCurrentStagePassView;
+	
+	private TextView mCurrentStageView;
+	
+	//当前歌曲名称
+	private TextView mCurrentSongNamePassView;
+	
 	// Play 按键事件
 	private ImageButton mBtnPlayStart;
 	
@@ -232,9 +240,54 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 	 * 处理过关界面及事件
 	 */
 	private void handlePassEvent() {
+		//显示过关界面
 		mPassView = (LinearLayout) this.findViewById(R.id.pass_view);
 		mPassView.setVisibility(View.VISIBLE);
+		
+		//停止未完成的动画
+		mViewPan.clearAnimation();
+		
+		//当前关的索引
+		mCurrentStagePassView = (TextView) findViewById
+				(R.id.text_current_stage_pass);
+		if (mCurrentStagePassView != null) {
+			mCurrentStagePassView.setText((mCurrentStageIndex + 1) + "");
+		}
+		
+		//显示歌曲的名称
+		mCurrentSongNamePassView = (TextView) findViewById
+				(R.id.text_current_song_name_pass);
+		if (mCurrentSongNamePassView != null) {
+			mCurrentSongNamePassView.setText(mCurrentSong.getSongName());
+		}
+		
+		//下一关按键处理
+		ImageButton btnPass = (ImageButton) findViewById(R.id.btn_next);
+		btnPass.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (judgeAppPassed()) {
+					//进入到通关界面
+					Util.startActivity(MainActivity.this, AllPassView.class);
+				} else {
+					//开始新一关
+					mPassView.setVisibility(View.GONE);
+					
+					//加载关卡数据
+					initCurrentStageData();
+				}
+			}
+		});
 	}
+	
+	/**
+	 * 判断是否通关
+	 * @return
+	 */
+	private boolean judgeAppPassed() {
+		return (mCurrentStageIndex == Const.SONG_INFO.length - 1);
+ 	}
 	
 	private void clearTheAnswer(WordButton wordButton) {
 		wordButton.mViewButton.setText("");
@@ -315,7 +368,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 		return song;
 	}
 	
-	//获得当前关的数据
+	/**
+	 * 加载当前关的数据
+	 */
 	private void initCurrentStageData() {
 		
 		//读取当前关的歌曲信息
@@ -326,8 +381,18 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 		
 		LayoutParams params = new LayoutParams(140, 140);
 		
+		//清空原来的答案
+		mViewWordsContainer.removeAllViews();
+		
+		//增加新的答案框
 		for (int i = 0; i < mBtnSelectWords.size(); i++) {
 			mViewWordsContainer.addView(mBtnSelectWords.get(i).mViewButton, params);
+		}
+		
+		//显示当前关的索引
+		mCurrentStageView = (TextView) findViewById(R.id.text_current_stage);
+		if (mCurrentStageView != null) {
+			mCurrentStageView.setText((mCurrentStageIndex + 1) + "");
 		}
 		
 		//获得数据
