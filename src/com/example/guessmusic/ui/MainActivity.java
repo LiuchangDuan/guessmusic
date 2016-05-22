@@ -29,6 +29,7 @@ import com.example.guessmusic.model.Song;
 import com.example.guessmusic.model.WordButton;
 import com.example.guessmusic.myui.MyGridView;
 import com.example.guessmusic.util.MyLog;
+import com.example.guessmusic.util.MyPlayer;
 import com.example.guessmusic.util.Util;
 
 public class MainActivity extends Activity implements IWordButtonClickListener {
@@ -141,7 +142,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 			@Override
 			public void onAnimationEnd(Animation animation) {
 				//开启拨杆退出动画
-				mViewPanBar.setAnimation(mBarOutAnim);
+				mViewPanBar.startAnimation(mBarOutAnim);
 			}
 
 			@Override
@@ -217,6 +218,7 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 		
 		//处理提示按键事件
 		handleTipAnswer();
+
 	}
 	
 	@Override
@@ -253,6 +255,12 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 		
 		//停止未完成的动画
 		mViewPan.clearAnimation();
+		
+		//停止正在播放的音乐
+		MyPlayer.stopTheSong(MainActivity.this);
+		
+		//播放音效
+		MyPlayer.playTone(MainActivity.this, MyPlayer.INDEX_STONE_COIN);
 		
 		//当前关的索引
 		mCurrentStagePassView = (TextView) findViewById
@@ -354,13 +362,21 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 				mViewPanBar.startAnimation(mBarInAnim);
 				//将按钮隐藏
 				mBtnPlayStart.setVisibility(View.INVISIBLE);
+				
+				//播放音乐
+				MyPlayer.playSong(MainActivity.this, 
+						mCurrentSong.getSongFileName());
 			}
 		}
 	}
 	
 	@Override
 	public void onPause() {
+		//停止动画
 		mViewPan.clearAnimation();
+		
+		//暂停音乐
+		MyPlayer.stopTheSong(MainActivity.this);
 		
 		super.onPause();
 	}
@@ -407,6 +423,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 		
 		//更新数据------MyGridView
 		mMyGridView.updateData(mAllWords);
+		
+		//一开始就播放音乐
+		handlePlayButton();
 	}
 	
 	/**
