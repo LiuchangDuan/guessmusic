@@ -114,6 +114,11 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		//读取数据
+		int[] datas = Util.loadData(this);
+		mCurrentStageIndex = datas[Const.INDEX_LOAD_DATA_STAGE];
+		mCurrentCoins = datas[Const.INDEX_LOAD_DATA_COINS];
+		
 		//初始化控件
 		mViewPan = (ImageView) findViewById(R.id.imageView1);
 		mViewPanBar = (ImageView) findViewById(R.id.imageView2);
@@ -253,6 +258,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 		mPassView = (LinearLayout) this.findViewById(R.id.pass_view);
 		mPassView.setVisibility(View.VISIBLE);
 		
+		//奖励金币
+		handleCoins(Const.PASS_AWARD_COINS);
+		
 		//停止未完成的动画
 		mViewPan.clearAnimation();
 		
@@ -372,6 +380,9 @@ public class MainActivity extends Activity implements IWordButtonClickListener {
 	
 	@Override
 	public void onPause() {
+		//保存游戏数据
+		Util.saveData(MainActivity.this, mCurrentStageIndex - 1, mCurrentCoins);
+		
 		//停止动画
 		mViewPan.clearAnimation();
 		

@@ -1,5 +1,12 @@
 package com.example.guessmusic.util;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.guessmusic.R;
+import com.example.guessmusic.data.Const;
 import com.example.guessmusic.model.IAlertDialogButtonListener;
 
 public class Util {
@@ -105,6 +113,67 @@ public class Util {
 		
 		//显示对话框
 		mAlertDialog.show();
+	}
+	
+	/**
+	 * 游戏数据保存
+	 * @param context
+	 * @param stageIndex
+	 * @param coins
+	 */
+	public static void saveData(Context context, int stageIndex, int coins) {
+		FileOutputStream fis = null;
+		
+		try {
+			fis = context.openFileOutput(Const.FILE_NAME_SAVE_DATA, 
+					Context.MODE_PRIVATE);
+			DataOutputStream das = new DataOutputStream(fis);
+			
+			das.writeInt(stageIndex);
+			das.writeInt(coins);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 读取游戏数据
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static int[] loadData(Context context) {
+		FileInputStream fis = null;
+		int[] datas = {-1, Const.TOTAL_COINS};
+				
+		try {
+			fis = context.openFileInput(Const.FILE_NAME_SAVE_DATA);
+			DataInputStream dis = new DataInputStream(fis);
+			
+			datas[Const.INDEX_LOAD_DATA_STAGE] = dis.readInt();
+			datas[Const.INDEX_LOAD_DATA_COINS] = dis.readInt();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return datas;
 	}
 	
 }
